@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Remind Me Later</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+  <div class="bg-white p-6 sm:p-8 rounded shadow-md w-full max-w-md">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-center">Set a Reminder</h1>
+    <form id="reminderForm" class="space-y-4">
+      
+      <div>
+        <label class="block mb-1 text-sm sm:text-base">Date</label>
+        <input type="date" name="date" required class="w-full border px-3 py-2 rounded text-sm sm:text-base"/>
+      </div>
+      
+      <div>
+        <label class="block mb-1 text-sm sm:text-base">Time</label>
+        <input type="time" name="time" required class="w-full border px-3 py-2 rounded text-sm sm:text-base"/>
+      </div>
+      
+      <div>
+        <label class="block mb-1 text-sm sm:text-base">Message</label>
+        <textarea name="message" rows="3" required class="w-full border px-3 py-2 rounded text-sm sm:text-base"></textarea>
+      </div>
+      
+      <div>
+        <label class="block mb-1 text-sm sm:text-base">Remind via</label>
+        <select name="reminder_type" class="w-full border px-3 py-2 rounded text-sm sm:text-base">
+          <option value="email">Email</option>
+          <option value="sms">SMS</option>
+        </select>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors duration-200">Submit</button>
+      
+      <p id="responseMsg" class="text-green-600 mt-2 text-center text-sm sm:text-base"></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('reminderForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        date: form.date.value,
+        time: form.time.value,
+        message: form.message.value,
+        reminder_type: form.reminder_type.value
+      };
+      const res = await fetch('/api/reminders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      const msg = document.getElementById('responseMsg');
+      msg.textContent = result.message || 'Reminder created!';
+      if (!res.ok) msg.style.color = 'red';
+    });
+  </script>
+</body>
+</html>
